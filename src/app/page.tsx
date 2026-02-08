@@ -321,11 +321,13 @@ export default function DictionaryTable() {
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <Box sx={{ width: '100%', minHeight: '100vh', py: 4, display: 'flex', justifyContent: 'center', position: 'relative' }}>
-        <Box sx={{ position: 'absolute', top: 16, left: 16 }}>
-          <Image src="/coffeecoders_logo.png" alt="Coffee Coders Logo" width={60} height={60} style={{ objectFit: 'contain' }} />
+        <Box sx={{ position: 'absolute', top: 16, left: 16, cursor: 'pointer' }}>
+          <a href="http://coffeecoders.pythonanywhere.com/">
+            <Image src="/coffeecoders_logo.png" alt="Coffee Coders Logo" width={60} height={60} style={{ objectFit: 'contain' }} />
+          </a>
         </Box>
         <Container maxWidth="lg">
-          <Box mb={4} textAlign="center">
+          <Box mb={4} mt={6} textAlign="center">
             <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
               Kasamhatla
             </Typography>
