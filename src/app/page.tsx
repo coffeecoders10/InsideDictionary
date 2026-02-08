@@ -263,7 +263,7 @@ export default function DictionaryTable() {
             <AdminModeToggle isAdmin={isAdmin} onToggle={handleAdminToggle} />
           </Box>
 
-          <Paper sx={{ width: '100%', mb: 2, p: 2, borderRadius: 2, boxShadow: 3 }}>
+          <Paper sx={{ width: '100%', mb: 2, p: 2, borderRadius: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <TextField
                 fullWidth
