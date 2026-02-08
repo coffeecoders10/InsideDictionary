@@ -18,6 +18,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import { visuallyHidden } from '@mui/utils';
+import AddIcon from '@mui/icons-material/Add';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import AddEntryModal from '../components/AddEntryModal';
 
 // Define the data structure
 interface DictionaryEntry {
@@ -176,6 +180,15 @@ export default function DictionaryTable() {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -231,15 +244,27 @@ export default function DictionaryTable() {
           </Box>
 
           <Paper sx={{ width: '100%', mb: 2, p: 2, borderRadius: 2, boxShadow: 3 }}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              label="Search Dictionary"
-              placeholder="Search by word, meaning, etc..."
-              value={searchTerm}
-              onChange={handleSearch}
-              sx={{ mb: 2 }}
-            />
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Search Dictionary"
+                placeholder="Search by word, meaning, etc..."
+                value={searchTerm}
+                onChange={handleSearch}
+              />
+              <Tooltip title="Add New Entry">
+                <IconButton
+                  onClick={handleClickOpen}
+                  color="primary"
+                  aria-label="add"
+                  size="large"
+                  sx={{ ml: 2, border: '1px solid', borderColor: 'divider' }}
+                >
+                  <AddIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
             <TableContainer>
               <Table
                 sx={{ minWidth: 750 }}
@@ -292,6 +317,7 @@ export default function DictionaryTable() {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
+            <AddEntryModal open={open} handleClose={handleClose} />
           </Paper>
         </Container>
       </Box>
