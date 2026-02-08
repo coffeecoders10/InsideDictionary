@@ -7,7 +7,7 @@ export const darkTheme = createTheme({
     palette: {
         mode: 'dark',
         primary: {
-            main: '#90caf9',
+            main: '#a07666ff', // Coffee color
         },
         background: {
             default: '#121212',
