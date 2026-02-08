@@ -1,7 +1,9 @@
 "use client";
 
 import * as React from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import TablePagination from '@mui/material/TablePagination';
+import { darkTheme } from './theme';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -65,22 +67,7 @@ const initialData: DictionaryEntry[] = [
   }
 ];
 
-// Create a dark theme
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#90caf9',
-    },
-    background: {
-      default: '#121212',
-      paper: '#1e1e1e',
-    },
-  },
-  typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-  },
-});
+
 
 type Order = 'asc' | 'desc';
 
@@ -187,7 +174,9 @@ export default function DictionaryTable() {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof DictionaryEntry>('word');
   const [searchTerm, setSearchTerm] = React.useState('');
-  
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
     property: keyof DictionaryEntry,
@@ -199,6 +188,16 @@ export default function DictionaryTable() {
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    setPage(0);
+  };
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   const filteredRows = React.useMemo(() => {
@@ -222,14 +221,14 @@ export default function DictionaryTable() {
       <CssBaseline />
       <Box sx={{ width: '100%', minHeight: '100vh', py: 4, display: 'flex', justifyContent: 'center' }}>
         <Container maxWidth="lg">
-           <Box mb={4} textAlign="center">
+          <Box mb={4} textAlign="center">
             <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
               Inside Dictionary
             </Typography>
             <Typography variant="subtitle1" color="text.secondary">
-               Explore words, meanings, and pronunciations.
+              Explore words, meanings, and pronunciations.
             </Typography>
-           </Box>
+          </Box>
 
           <Paper sx={{ width: '100%', mb: 2, p: 2, borderRadius: 2, boxShadow: 3 }}>
             <TextField
@@ -254,33 +253,45 @@ export default function DictionaryTable() {
                 />
                 <TableBody>
                   {sortedRows.length > 0 ? (
-                    sortedRows.map((row) => {
-                      return (
-                        <TableRow
-                          hover
-                          role="checkbox"
-                          tabIndex={-1}
-                          key={row.id}
-                        >
-                          <TableCell component="th" scope="row" sx={{ fontWeight: 'medium', fontSize: '1.1rem' }}>
-                            {row.word}
-                          </TableCell>
-                          <TableCell>{row.meaning}</TableCell>
-                          <TableCell sx={{ fontStyle: 'italic', color: 'text.secondary' }}>{row.pronunciation}</TableCell>
-                          <TableCell>{row.date}</TableCell>
-                        </TableRow>
-                      );
-                    })
+                    sortedRows
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((row) => {
+                        return (
+                          <TableRow
+                            hover
+                            role="checkbox"
+                            tabIndex={-1}
+                            key={row.id}
+                          >
+                            <TableCell component="th" scope="row" sx={{ fontWeight: 'medium', fontSize: '1.1rem' }}>
+                              {row.word}
+                            </TableCell>
+                            <TableCell>{row.meaning}</TableCell>
+                            <TableCell sx={{ fontStyle: 'italic', color: 'text.secondary' }}>{row.pronunciation}</TableCell>
+                            <TableCell>{row.date}</TableCell>
+                          </TableRow>
+                        );
+                      })
                   ) : (
                     <TableRow>
                       <TableCell colSpan={4} align="center" sx={{ py: 3 }}>
                         <Typography variant="body1">No entries found for "{searchTerm}"</Typography>
                       </TableCell>
                     </TableRow>
-                  )}
+                  )
+                  }
                 </TableBody>
               </Table>
             </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={sortedRows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
           </Paper>
         </Container>
       </Box>
