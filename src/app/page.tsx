@@ -322,15 +322,15 @@ export default function DictionaryTable() {
       <CssBaseline />
       <Box sx={{ width: '100%', minHeight: '100vh', py: 4, display: 'flex', justifyContent: 'center', position: 'relative' }}>
         <Box sx={{ position: 'absolute', top: 16, left: 16 }}>
-          <Image src="/coffeecoders_logo.png" alt="Inside Dictionary Logo" width={60} height={60} style={{ objectFit: 'contain' }} />
+          <Image src="/coffeecoders_logo.png" alt="Coffee Coders Logo" width={60} height={60} style={{ objectFit: 'contain' }} />
         </Box>
         <Container maxWidth="lg">
           <Box mb={4} textAlign="center">
             <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-              Inside Words
+              Kasamhatla
             </Typography>
             <Typography variant="subtitle1" color="text.secondary">
-              A dictionary of all the inside words of the coffee coders.
+              A dictionary of all the inside words.
             </Typography>
           </Box>
 
