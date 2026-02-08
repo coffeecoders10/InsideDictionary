@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Inside Dictionary",
-  description: "Explore words, meanings, and pronunciations.",
+  title: "Inside Words",
+  description: "A dictionary of all the inside words of the coffee coders.",
   icons: {
     icon: '/coffeecoders_logo.png',
   },

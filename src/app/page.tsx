@@ -327,10 +327,10 @@ export default function DictionaryTable() {
         <Container maxWidth="lg">
           <Box mb={4} textAlign="center">
             <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-              Inside Dictionary
+              Inside Words
             </Typography>
             <Typography variant="subtitle1" color="text.secondary">
-              Explore words, meanings, and pronunciations.
+              A dictionary of all the inside words of the coffee coders.
             </Typography>
           </Box>
 

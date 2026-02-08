@@ -2,12 +2,11 @@
 
 import { createTheme } from '@mui/material/styles';
 
-// Create a dark theme
 export const darkTheme = createTheme({
     palette: {
         mode: 'dark',
         primary: {
-            main: '#a07666ff', // Coffee color
+            main: '#a07666ff',
         },
         background: {
             default: '#121212',
