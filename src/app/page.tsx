@@ -27,25 +27,30 @@ import Tooltip from '@mui/material/Tooltip';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import Image from 'next/image';
-import AddEntryModal from '../components/AddEntryModal';
+import AddEntryModal, { DictionaryEntry } from '../components/AddEntryModal';
 import AdminModeToggle from '../components/AdminModeToggle';
-
-// Define the data structure
-interface DictionaryEntry {
-  id: number;
-  word: string;
-  meaning: string;
-  pronunciation: string;
-  date: string;
-}
 
 type Order = 'asc' | 'desc';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
+  let aValue = a[orderBy];
+  let bValue = b[orderBy];
+
+  // Handle arrays (like examples) by taking the first element
+  if (Array.isArray(aValue)) aValue = aValue[0];
+  if (Array.isArray(bValue)) bValue = bValue[0];
+
+  // Handle null/undefined
+  if (bValue === undefined || bValue === null) {
+    if (aValue === undefined || aValue === null) return 0;
     return -1;
   }
-  if (b[orderBy] > a[orderBy]) {
+  if (aValue === undefined || aValue === null) return 1;
+
+  if (bValue < aValue) {
+    return -1;
+  }
+  if (bValue > aValue) {
     return 1;
   }
   return 0;
@@ -55,8 +60,8 @@ function getComparator<Key extends keyof any>(
   order: Order,
   orderBy: Key,
 ): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string },
+  a: { [key in Key]: any },
+  b: { [key in Key]: any },
 ) => number {
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
@@ -88,6 +93,18 @@ const headCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: 'Pronunciation',
+  },
+  {
+    id: 'origin',
+    numeric: false,
+    disablePadding: false,
+    label: 'Origin',
+  },
+  {
+    id: 'examples',
+    numeric: false,
+    disablePadding: false,
+    label: 'Example',
   },
   {
     id: 'date',
@@ -172,7 +189,16 @@ export default function DictionaryTable() {
         const jsonData = await response.json();
         // The API returns the data in the 'pjson' field
         if (jsonData && Array.isArray(jsonData.pjson)) {
-          setRows(jsonData.pjson);
+          const normalizedData = jsonData.pjson.map((entry: any) => ({
+            ...entry,
+            origin: entry.origin || "",
+            // Ensure examples is an array. If it's missing, default to [""].
+            // If it exists but is not an array (legacy single string?), wrap it.
+            examples: Array.isArray(entry.examples)
+              ? entry.examples
+              : (entry.example ? [entry.example] : [""]),
+          }));
+          setRows(normalizedData);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -280,7 +306,9 @@ export default function DictionaryTable() {
         row.word.toLowerCase().includes(searchLower) ||
         row.meaning.toLowerCase().includes(searchLower) ||
         row.pronunciation.toLowerCase().includes(searchLower) ||
-        row.date.toLowerCase().includes(searchLower)
+        row.date.toLowerCase().includes(searchLower) ||
+        (row.origin || '').toLowerCase().includes(searchLower) ||
+        (row.examples && row.examples[0] ? row.examples[0].toLowerCase().includes(searchLower) : false)
       );
     });
   }, [rows, searchTerm]);
@@ -377,6 +405,8 @@ export default function DictionaryTable() {
                             </TableCell>
                             <TableCell>{row.meaning}</TableCell>
                             <TableCell sx={{ fontStyle: 'italic', color: 'text.secondary' }}>{row.pronunciation}</TableCell>
+                            <TableCell>{row.origin || '-'}</TableCell>
+                            <TableCell>{row.examples && row.examples.length > 0 ? row.examples[0] : '-'}</TableCell>
                             <TableCell>{row.date}</TableCell>
                             {isAdmin && (
                               <>

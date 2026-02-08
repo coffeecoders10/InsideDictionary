@@ -16,6 +16,8 @@ export interface DictionaryEntry {
     meaning: string;
     pronunciation: string;
     date: string;
+    origin: string;
+    examples: string[];
 }
 
 interface AddEntryModalProps {
@@ -30,6 +32,8 @@ export default function AddEntryModal({ open, handleClose, onSave, initialData }
     const [meaning, setMeaning] = React.useState('');
     const [pronunciation, setPronunciation] = React.useState('');
     const [date, setDate] = React.useState('');
+    const [origin, setOrigin] = React.useState('');
+    const [example, setExample] = React.useState('');
 
     React.useEffect(() => {
         if (open) {
@@ -38,12 +42,16 @@ export default function AddEntryModal({ open, handleClose, onSave, initialData }
                 setMeaning(initialData.meaning);
                 setPronunciation(initialData.pronunciation);
                 setDate(initialData.date);
+                setOrigin(initialData.origin || '');
+                setExample(initialData.examples && initialData.examples.length > 0 ? initialData.examples[0] : '');
             } else {
                 setWord('');
                 setMeaning('');
                 setPronunciation('');
                 // Default to today's date in YYYY-MM-DD format
                 setDate(new Date().toISOString().split('T')[0]);
+                setOrigin('');
+                setExample('');
             }
         }
     }, [initialData, open]);
@@ -55,6 +63,8 @@ export default function AddEntryModal({ open, handleClose, onSave, initialData }
             meaning,
             pronunciation,
             date,
+            origin,
+            examples: [example],
         };
 
         if (initialData) {
@@ -123,6 +133,29 @@ export default function AddEntryModal({ open, handleClose, onSave, initialData }
                         required
                         value={pronunciation}
                         onChange={(e) => setPronunciation(e.target.value)}
+                    />
+                    <TextField
+                        margin="dense"
+                        id="origin"
+                        label="Origin"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={origin}
+                        onChange={(e) => setOrigin(e.target.value)}
+                    />
+                    <TextField
+                        margin="dense"
+                        id="example"
+                        label="Example"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        multiline
+                        rows={2}
+                        value={example}
+                        onChange={(e) => setExample(e.target.value)}
+                        helperText="Only one example is displayed for now"
                     />
                     <TextField
                         margin="dense"
