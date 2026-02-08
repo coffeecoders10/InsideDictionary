@@ -19,9 +19,12 @@ import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import { visuallyHidden } from '@mui/utils';
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import AddEntryModal from '../components/AddEntryModal';
+import AdminModeToggle from '../components/AdminModeToggle';
 
 // Define the data structure
 interface DictionaryEntry {
@@ -135,10 +138,11 @@ interface EnhancedTableProps {
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof DictionaryEntry) => void;
   order: Order;
   orderBy: string;
+  isAdmin: boolean;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { order, orderBy, onRequestSort } = props;
+  const { order, orderBy, onRequestSort, isAdmin } = props;
   const createSortHandler =
     (property: keyof DictionaryEntry) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
@@ -169,6 +173,12 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
+        {isAdmin && (
+          <>
+            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Edit</TableCell>
+            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Delete</TableCell>
+          </>
+        )}
       </TableRow>
     </TableHead>
   );
@@ -181,6 +191,11 @@ export default function DictionaryTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(false);
+  const [isAdmin, setIsAdmin] = React.useState(false);
+
+  const handleAdminToggle = (status: boolean) => {
+    setIsAdmin(status);
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -243,6 +258,11 @@ export default function DictionaryTable() {
             </Typography>
           </Box>
 
+
+          <Box sx={{ ml: 2, mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+            <AdminModeToggle isAdmin={isAdmin} onToggle={handleAdminToggle} />
+          </Box>
+
           <Paper sx={{ width: '100%', mb: 2, p: 2, borderRadius: 2, boxShadow: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <TextField
@@ -253,17 +273,19 @@ export default function DictionaryTable() {
                 value={searchTerm}
                 onChange={handleSearch}
               />
-              <Tooltip title="Add New Entry">
-                <IconButton
-                  onClick={handleClickOpen}
-                  color="primary"
-                  aria-label="add"
-                  size="large"
-                  sx={{ ml: 2, border: '1px solid', borderColor: 'divider' }}
-                >
-                  <AddIcon />
-                </IconButton>
-              </Tooltip>
+              {isAdmin && (
+                <Tooltip title="Add New Entry">
+                  <IconButton
+                    onClick={handleClickOpen}
+                    color="primary"
+                    aria-label="add"
+                    size="large"
+                    sx={{ ml: 2, border: '1px solid', borderColor: 'divider' }}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
             </Box>
             <TableContainer>
               <Table
@@ -275,6 +297,7 @@ export default function DictionaryTable() {
                   order={order}
                   orderBy={orderBy}
                   onRequestSort={handleRequestSort}
+                  isAdmin={isAdmin}
                 />
                 <TableBody>
                   {sortedRows.length > 0 ? (
@@ -294,12 +317,26 @@ export default function DictionaryTable() {
                             <TableCell>{row.meaning}</TableCell>
                             <TableCell sx={{ fontStyle: 'italic', color: 'text.secondary' }}>{row.pronunciation}</TableCell>
                             <TableCell>{row.date}</TableCell>
+                            {isAdmin && (
+                              <>
+                                <TableCell align="center">
+                                  <IconButton aria-label="edit">
+                                    <EditIcon />
+                                  </IconButton>
+                                </TableCell>
+                                <TableCell align="center">
+                                  <IconButton aria-label="delete">
+                                    <DeleteIcon />
+                                  </IconButton>
+                                </TableCell>
+                              </>
+                            )}
                           </TableRow>
                         );
                       })
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={4} align="center" sx={{ py: 3 }}>
+                      <TableCell colSpan={isAdmin ? 6 : 4} align="center" sx={{ py: 3 }}>
                         <Typography variant="body1">No entries found for "{searchTerm}"</Typography>
                       </TableCell>
                     </TableRow>
