@@ -35,47 +35,6 @@ interface DictionaryEntry {
   date: string;
 }
 
-// Prepopulated data
-const initialData: DictionaryEntry[] = [
-  {
-    id: 1,
-    word: "Serendipity",
-    meaning: "The occurrence of events by chance in a happy or beneficial way.",
-    pronunciation: "/ˌserənˈdipədē/",
-    date: "2023-10-26"
-  },
-  {
-    id: 2,
-    word: "Ephemeral",
-    meaning: "Lasting for a very short time.",
-    pronunciation: "/əˈfem(ə)rəl/",
-    date: "2023-10-27"
-  },
-  {
-    id: 3,
-    word: "Luminous",
-    meaning: "Full of or shedding light; bright or shining, especially in the dark.",
-    pronunciation: "/ˈlo͞omənəs/",
-    date: "2023-10-28"
-  },
-  {
-    id: 4,
-    word: "Mellifluous",
-    meaning: "(of a voice or words) sweet or musical; pleasant to hear.",
-    pronunciation: "/məˈliflo͞oəs/",
-    date: "2023-10-29"
-  },
-  {
-    id: 5,
-    word: "Quixotic",
-    meaning: "Exceedingly idealistic; unrealistic and impractical.",
-    pronunciation: "/kwikˈsädik/",
-    date: "2023-10-30"
-  }
-];
-
-
-
 type Order = 'asc' | 'desc';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -193,6 +152,28 @@ export default function DictionaryTable() {
   const [open, setOpen] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
 
+  const [rows, setRows] = React.useState<DictionaryEntry[]>([]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/project/1');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const jsonData = await response.json();
+        // The API returns the data in the 'pjson' field
+        if (jsonData && Array.isArray(jsonData.pjson)) {
+          setRows(jsonData.pjson);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const handleAdminToggle = (status: boolean) => {
     setIsAdmin(status);
   };
@@ -229,7 +210,7 @@ export default function DictionaryTable() {
   };
 
   const filteredRows = React.useMemo(() => {
-    return initialData.filter((row) => {
+    return rows.filter((row) => {
       const searchLower = searchTerm.toLowerCase();
       return (
         row.word.toLowerCase().includes(searchLower) ||
@@ -238,7 +219,7 @@ export default function DictionaryTable() {
         row.date.toLowerCase().includes(searchLower)
       );
     });
-  }, [searchTerm]);
+  }, [rows, searchTerm]);
 
   const sortedRows = React.useMemo(() => {
     return [...filteredRows].sort(getComparator(order, orderBy));
