@@ -21,8 +21,12 @@ import { visuallyHidden } from '@mui/utils';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import Image from 'next/image';
 import AddEntryModal from '../components/AddEntryModal';
 import AdminModeToggle from '../components/AdminModeToggle';
 
@@ -151,8 +155,12 @@ export default function DictionaryTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
+  const [editingEntry, setEditingEntry] = React.useState<DictionaryEntry | null>(null);
 
   const [rows, setRows] = React.useState<DictionaryEntry[]>([]);
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState<'success' | 'error'>('success');
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -172,14 +180,70 @@ export default function DictionaryTable() {
     };
 
     fetchData();
+    fetchData();
   }, []);
+
+  const handleSaveData = async () => {
+    try {
+      const response = await fetch('/api/project/1', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pjson: rows }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save data');
+      }
+
+      setSnackbarMessage('Data saved successfully!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error('Error saving data:', error);
+      setSnackbarMessage('Error saving data. Please try again.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
 
   const handleAdminToggle = (status: boolean) => {
     setIsAdmin(status);
   };
 
   const handleClickOpen = () => {
+    setEditingEntry(null);
     setOpen(true);
+  };
+
+  const handleEditClick = (entry: DictionaryEntry) => {
+    setEditingEntry(entry);
+    setOpen(true);
+  };
+
+  const handleDeleteClick = (id: number) => {
+    if (window.confirm('Are you sure you want to delete this entry?')) {
+      setRows((prevRows) => prevRows.filter((row) => row.id !== id));
+    }
+  };
+
+  const handleSaveEntry = (entry: DictionaryEntry | Omit<DictionaryEntry, 'id'>) => {
+    if ('id' in entry) {
+      // Edit
+      setRows((prevRows) => prevRows.map((row) => (row.id === (entry as DictionaryEntry).id ? (entry as DictionaryEntry) : row)));
+    } else {
+      // Add
+      const newId = rows.length > 0 ? Math.max(...rows.map((r) => r.id)) + 1 : 1;
+      setRows((prevRows) => [...prevRows, { ...entry, id: newId } as DictionaryEntry]);
+    }
   };
 
   const handleClose = () => {
@@ -228,7 +292,10 @@ export default function DictionaryTable() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <Box sx={{ width: '100%', minHeight: '100vh', py: 4, display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ width: '100%', minHeight: '100vh', py: 4, display: 'flex', justifyContent: 'center', position: 'relative' }}>
+        <Box sx={{ position: 'absolute', top: 16, left: 16 }}>
+          <Image src="/coffeecoders_logo.png" alt="Inside Dictionary Logo" width={60} height={60} style={{ objectFit: 'contain' }} />
+        </Box>
         <Container maxWidth="lg">
           <Box mb={4} textAlign="center">
             <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
@@ -255,17 +322,30 @@ export default function DictionaryTable() {
                 onChange={handleSearch}
               />
               {isAdmin && (
-                <Tooltip title="Add New Entry">
-                  <IconButton
-                    onClick={handleClickOpen}
-                    color="primary"
-                    aria-label="add"
-                    size="large"
-                    sx={{ ml: 2, border: '1px solid', borderColor: 'divider' }}
-                  >
-                    <AddIcon />
-                  </IconButton>
-                </Tooltip>
+                <>
+                  <Tooltip title="Save Changes">
+                    <IconButton
+                      onClick={handleSaveData}
+                      color="primary"
+                      aria-label="save"
+                      size="large"
+                      sx={{ ml: 2, border: '1px solid', borderColor: 'divider' }}
+                    >
+                      <SaveIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Add New Entry">
+                    <IconButton
+                      onClick={handleClickOpen}
+                      color="primary"
+                      aria-label="add"
+                      size="large"
+                      sx={{ ml: 2, border: '1px solid', borderColor: 'divider' }}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  </Tooltip>
+                </>
               )}
             </Box>
             <TableContainer>
@@ -301,12 +381,12 @@ export default function DictionaryTable() {
                             {isAdmin && (
                               <>
                                 <TableCell align="center">
-                                  <IconButton aria-label="edit">
+                                  <IconButton aria-label="edit" onClick={() => handleEditClick(row)}>
                                     <EditIcon />
                                   </IconButton>
                                 </TableCell>
                                 <TableCell align="center">
-                                  <IconButton aria-label="delete">
+                                  <IconButton aria-label="delete" onClick={() => handleDeleteClick(row.id)}>
                                     <DeleteIcon />
                                   </IconButton>
                                 </TableCell>
@@ -335,8 +415,18 @@ export default function DictionaryTable() {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
-            <AddEntryModal open={open} handleClose={handleClose} />
+            <AddEntryModal
+              open={open}
+              handleClose={handleClose}
+              onSave={handleSaveEntry}
+              initialData={editingEntry}
+            />
           </Paper>
+          <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+            <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
         </Container>
       </Box>
     </ThemeProvider>
