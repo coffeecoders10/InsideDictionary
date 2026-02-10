@@ -52,7 +52,7 @@ export async function POST(
 
   try {
     const body = await request.json();
-    const res = await fetch(`${baseUrl}/db_query/project/${id}`, {
+    const res = await fetch(`${baseUrl}/db_query/inside_dictionary/${id}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -89,7 +89,7 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const res = await fetch(`${baseUrl}/db_query/project/${id}`, {
+    const res = await fetch(`${baseUrl}/db_query/inside_dictionary/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
