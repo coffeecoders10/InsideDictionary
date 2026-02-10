@@ -1,36 +1,36 @@
 "use client";
 
-import * as React from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import TablePagination from "@mui/material/TablePagination";
-import { darkTheme } from "./theme";
-import CssBaseline from "@mui/material/CssBaseline";
-import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import TextField from "@mui/material/TextField";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableSortLabel from "@mui/material/TableSortLabel";
-import { visuallyHidden } from "@mui/utils";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import SaveIcon from "@mui/icons-material/Save";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import Image from "next/image";
-import AddEntryModal, { DictionaryEntry } from "../components/AddEntryModal";
-import AdminModeToggle from "../components/AdminModeToggle";
+import * as React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import TablePagination from '@mui/material/TablePagination';
+import { darkTheme } from './theme';
+import CssBaseline from '@mui/material/CssBaseline';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import { visuallyHidden } from '@mui/utils';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import Image from 'next/image';
+import AddEntryModal, { DictionaryEntry } from '../components/AddEntryModal';
+import AdminModeToggle from '../components/AdminModeToggle';
 
-type Order = "asc" | "desc";
+type Order = 'asc' | 'desc';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   let aValue = a[orderBy];
@@ -59,8 +59,11 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 function getComparator<Key extends keyof any>(
   order: Order,
   orderBy: Key,
-): (a: { [key in Key]: any }, b: { [key in Key]: any }) => number {
-  return order === "desc"
+): (
+  a: { [key in Key]: any },
+  b: { [key in Key]: any },
+) => number {
+  return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -74,48 +77,45 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
   {
-    id: "word",
+    id: 'word',
     numeric: false,
     disablePadding: false,
-    label: "Word",
+    label: 'Word',
   },
   {
-    id: "meaning",
+    id: 'meaning',
     numeric: false,
     disablePadding: false,
-    label: "Meaning",
+    label: 'Meaning',
   },
   {
-    id: "pronunciation",
+    id: 'pronunciation',
     numeric: false,
     disablePadding: false,
-    label: "Pronunciation",
+    label: 'Pronunciation',
   },
   {
-    id: "origin",
+    id: 'origin',
     numeric: false,
     disablePadding: false,
-    label: "Origin",
+    label: 'Origin',
   },
   {
-    id: "examples",
+    id: 'examples',
     numeric: false,
     disablePadding: false,
-    label: "Example",
+    label: 'Example',
   },
   {
-    id: "date",
+    id: 'date',
     numeric: false,
     disablePadding: false,
-    label: "Date Added",
+    label: 'Date Added',
   },
 ];
 
 interface EnhancedTableProps {
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: keyof DictionaryEntry,
-  ) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof DictionaryEntry) => void;
   order: Order;
   orderBy: string;
   isAdmin: boolean;
@@ -134,20 +134,20 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
-            padding={headCell.disablePadding ? "none" : "normal"}
+            align={headCell.numeric ? 'right' : 'left'}
+            padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
-            sx={{ fontWeight: "bold" }}
+            sx={{ fontWeight: 'bold' }}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : "asc"}
+              direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -155,12 +155,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         ))}
         {isAdmin && (
           <>
-            <TableCell align="center" sx={{ fontWeight: "bold" }}>
-              Edit
-            </TableCell>
-            <TableCell align="center" sx={{ fontWeight: "bold" }}>
-              Delete
-            </TableCell>
+            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Edit</TableCell>
+            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Delete</TableCell>
           </>
         )}
       </TableRow>
@@ -169,29 +165,26 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 export default function DictionaryTable() {
-  const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] = React.useState<keyof DictionaryEntry>("word");
-  const [searchTerm, setSearchTerm] = React.useState("");
+  const [order, setOrder] = React.useState<Order>('asc');
+  const [orderBy, setOrderBy] = React.useState<keyof DictionaryEntry>('word');
+  const [searchTerm, setSearchTerm] = React.useState('');
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(false);
   const [isAdmin, setIsAdmin] = React.useState(false);
-  const [editingEntry, setEditingEntry] =
-    React.useState<DictionaryEntry | null>(null);
+  const [editingEntry, setEditingEntry] = React.useState<DictionaryEntry | null>(null);
 
   const [rows, setRows] = React.useState<DictionaryEntry[]>([]);
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
-  const [snackbarMessage, setSnackbarMessage] = React.useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = React.useState<
-    "success" | "error"
-  >("success");
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState<'success' | 'error'>('success');
 
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/inside_dictionary/1");
+        const response = await fetch('/api/project/1');
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error('Network response was not ok');
         }
         const jsonData = await response.json();
         // The API returns the data in the 'pjson' field
@@ -203,14 +196,12 @@ export default function DictionaryTable() {
             // If it exists but is not an array (legacy single string?), wrap it.
             examples: Array.isArray(entry.examples)
               ? entry.examples
-              : entry.example
-                ? [entry.example]
-                : [""],
+              : (entry.example ? [entry.example] : [""]),
           }));
           setRows(normalizedData);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       }
     };
 
@@ -220,34 +211,31 @@ export default function DictionaryTable() {
 
   const handleSaveData = async () => {
     try {
-      const response = await fetch("/api/inside_dictionary/1", {
-        method: "PUT",
+      const response = await fetch('/api/project/1', {
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ pjson: rows }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save data");
+        throw new Error('Failed to save data');
       }
 
-      setSnackbarMessage("Data saved successfully!");
-      setSnackbarSeverity("success");
+      setSnackbarMessage('Data saved successfully!');
+      setSnackbarSeverity('success');
       setSnackbarOpen(true);
     } catch (error) {
-      console.error("Error saving data:", error);
-      setSnackbarMessage("Error saving data. Please try again.");
-      setSnackbarSeverity("error");
+      console.error('Error saving data:', error);
+      setSnackbarMessage('Error saving data. Please try again.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
     }
   };
 
-  const handleCloseSnackbar = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string,
-  ) => {
-    if (reason === "clickaway") {
+  const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
       return;
     }
     setSnackbarOpen(false);
@@ -268,31 +256,19 @@ export default function DictionaryTable() {
   };
 
   const handleDeleteClick = (id: number) => {
-    if (window.confirm("Are you sure you want to delete this entry?")) {
+    if (window.confirm('Are you sure you want to delete this entry?')) {
       setRows((prevRows) => prevRows.filter((row) => row.id !== id));
     }
   };
 
-  const handleSaveEntry = (
-    entry: DictionaryEntry | Omit<DictionaryEntry, "id">,
-  ) => {
-    if ("id" in entry) {
+  const handleSaveEntry = (entry: DictionaryEntry | Omit<DictionaryEntry, 'id'>) => {
+    if ('id' in entry) {
       // Edit
-      setRows((prevRows) =>
-        prevRows.map((row) =>
-          row.id === (entry as DictionaryEntry).id
-            ? (entry as DictionaryEntry)
-            : row,
-        ),
-      );
+      setRows((prevRows) => prevRows.map((row) => (row.id === (entry as DictionaryEntry).id ? (entry as DictionaryEntry) : row)));
     } else {
       // Add
-      const newId =
-        rows.length > 0 ? Math.max(...rows.map((r) => r.id)) + 1 : 1;
-      setRows((prevRows) => [
-        ...prevRows,
-        { ...entry, id: newId } as DictionaryEntry,
-      ]);
+      const newId = rows.length > 0 ? Math.max(...rows.map((r) => r.id)) + 1 : 1;
+      setRows((prevRows) => [...prevRows, { ...entry, id: newId } as DictionaryEntry]);
     }
   };
 
@@ -304,8 +280,8 @@ export default function DictionaryTable() {
     event: React.MouseEvent<unknown>,
     property: keyof DictionaryEntry,
   ) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
@@ -318,9 +294,7 @@ export default function DictionaryTable() {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -333,10 +307,8 @@ export default function DictionaryTable() {
         row.meaning.toLowerCase().includes(searchLower) ||
         row.pronunciation.toLowerCase().includes(searchLower) ||
         row.date.toLowerCase().includes(searchLower) ||
-        (row.origin || "").toLowerCase().includes(searchLower) ||
-        (row.examples && row.examples[0]
-          ? row.examples[0].toLowerCase().includes(searchLower)
-          : false)
+        (row.origin || '').toLowerCase().includes(searchLower) ||
+        (row.examples && row.examples[0] ? row.examples[0].toLowerCase().includes(searchLower) : false)
       );
     });
   }, [rows, searchTerm]);
@@ -348,37 +320,15 @@ export default function DictionaryTable() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <Box
-        sx={{
-          width: "100%",
-          minHeight: "100vh",
-          py: 4,
-          display: "flex",
-          justifyContent: "center",
-          position: "relative",
-        }}
-      >
-        <Box
-          sx={{ position: "absolute", top: 16, left: 16, cursor: "pointer" }}
-        >
+      <Box sx={{ width: '100%', minHeight: '100vh', py: 4, display: 'flex', justifyContent: 'center', position: 'relative' }}>
+        <Box sx={{ position: 'absolute', top: 16, left: 16, cursor: 'pointer' }}>
           <a href="http://coffeecoders.pythonanywhere.com/">
-            <Image
-              src="/coffeecoders_logo.png"
-              alt="Coffee Coders Logo"
-              width={60}
-              height={60}
-              style={{ objectFit: "contain" }}
-            />
+            <Image src="/coffeecoders_logo.png" alt="Coffee Coders Logo" width={60} height={60} style={{ objectFit: 'contain' }} />
           </a>
         </Box>
         <Container maxWidth="lg">
           <Box mb={4} mt={6} textAlign="center">
-            <Typography
-              variant="h3"
-              component="h1"
-              gutterBottom
-              sx={{ fontWeight: "bold", color: "primary.main" }}
-            >
+            <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
               Kasamhatla
             </Typography>
             <Typography variant="subtitle1" color="text.secondary">
@@ -386,20 +336,13 @@ export default function DictionaryTable() {
             </Typography>
           </Box>
 
-          <Box
-            sx={{
-              ml: 2,
-              mb: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-            }}
-          >
+
+          <Box sx={{ ml: 2, mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
             <AdminModeToggle isAdmin={isAdmin} onToggle={handleAdminToggle} />
           </Box>
 
-          <Paper sx={{ width: "100%", mb: 2, p: 2, borderRadius: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+          <Paper sx={{ width: '100%', mb: 2, p: 2, borderRadius: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <TextField
                 fullWidth
                 variant="outlined"
@@ -416,11 +359,7 @@ export default function DictionaryTable() {
                       color="primary"
                       aria-label="save"
                       size="large"
-                      sx={{
-                        ml: 2,
-                        border: "1px solid",
-                        borderColor: "divider",
-                      }}
+                      sx={{ ml: 2, border: '1px solid', borderColor: 'divider' }}
                     >
                       <SaveIcon />
                     </IconButton>
@@ -431,11 +370,7 @@ export default function DictionaryTable() {
                       color="primary"
                       aria-label="add"
                       size="large"
-                      sx={{
-                        ml: 2,
-                        border: "1px solid",
-                        borderColor: "divider",
-                      }}
+                      sx={{ ml: 2, border: '1px solid', borderColor: 'divider' }}
                     >
                       <AddIcon />
                     </IconButton>
@@ -447,7 +382,7 @@ export default function DictionaryTable() {
               <Table
                 sx={{ minWidth: 750 }}
                 aria-labelledby="tableTitle"
-                size={"medium"}
+                size={'medium'}
               >
                 <EnhancedTableHead
                   order={order}
@@ -458,10 +393,7 @@ export default function DictionaryTable() {
                 <TableBody>
                   {sortedRows.length > 0 ? (
                     sortedRows
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage,
-                      )
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map((row) => {
                         return (
                           <TableRow
@@ -470,44 +402,23 @@ export default function DictionaryTable() {
                             tabIndex={-1}
                             key={row.id}
                           >
-                            <TableCell
-                              component="th"
-                              scope="row"
-                              sx={{ fontWeight: "medium", fontSize: "1.1rem" }}
-                            >
+                            <TableCell component="th" scope="row" sx={{ fontWeight: 'medium', fontSize: '1.1rem' }}>
                               {row.word}
                             </TableCell>
                             <TableCell>{row.meaning}</TableCell>
-                            <TableCell
-                              sx={{
-                                fontStyle: "italic",
-                                color: "text.secondary",
-                              }}
-                            >
-                              {row.pronunciation}
-                            </TableCell>
-                            <TableCell>{row.origin || "-"}</TableCell>
-                            <TableCell>
-                              {row.examples && row.examples.length > 0
-                                ? row.examples[0]
-                                : "-"}
-                            </TableCell>
+                            <TableCell sx={{ fontStyle: 'italic', color: 'text.secondary' }}>{row.pronunciation}</TableCell>
+                            <TableCell>{row.origin || '-'}</TableCell>
+                            <TableCell>{row.examples && row.examples.length > 0 ? row.examples[0] : '-'}</TableCell>
                             <TableCell>{row.date}</TableCell>
                             {isAdmin && (
                               <>
                                 <TableCell align="center">
-                                  <IconButton
-                                    aria-label="edit"
-                                    onClick={() => handleEditClick(row)}
-                                  >
+                                  <IconButton aria-label="edit" onClick={() => handleEditClick(row)}>
                                     <EditIcon />
                                   </IconButton>
                                 </TableCell>
                                 <TableCell align="center">
-                                  <IconButton
-                                    aria-label="delete"
-                                    onClick={() => handleDeleteClick(row.id)}
-                                  >
+                                  <IconButton aria-label="delete" onClick={() => handleDeleteClick(row.id)}>
                                     <DeleteIcon />
                                   </IconButton>
                                 </TableCell>
@@ -518,17 +429,12 @@ export default function DictionaryTable() {
                       })
                   ) : (
                     <TableRow>
-                      <TableCell
-                        colSpan={isAdmin ? 6 : 4}
-                        align="center"
-                        sx={{ py: 3 }}
-                      >
-                        <Typography variant="body1">
-                          No entries found for "{searchTerm}"
-                        </Typography>
+                      <TableCell colSpan={isAdmin ? 6 : 4} align="center" sx={{ py: 3 }}>
+                        <Typography variant="body1">No entries found for "{searchTerm}"</Typography>
                       </TableCell>
                     </TableRow>
-                  )}
+                  )
+                  }
                 </TableBody>
               </Table>
             </TableContainer>
@@ -548,16 +454,8 @@ export default function DictionaryTable() {
               initialData={editingEntry}
             />
           </Paper>
-          <Snackbar
-            open={snackbarOpen}
-            autoHideDuration={6000}
-            onClose={handleCloseSnackbar}
-          >
-            <Alert
-              onClose={handleCloseSnackbar}
-              severity={snackbarSeverity}
-              sx={{ width: "100%" }}
-            >
+          <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+            <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
               {snackbarMessage}
             </Alert>
           </Snackbar>
